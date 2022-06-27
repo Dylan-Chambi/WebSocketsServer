@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 public class ChatServer extends WebSocketServer implements ICanalComunicacion {
-    List<WebSocket> observers = new ArrayList<>();
+    List<WebSocket> salaChat = new ArrayList<>();
 
     public ChatServer(int port) {
         super(new InetSocketAddress(port));
@@ -20,14 +20,14 @@ public class ChatServer extends WebSocketServer implements ICanalComunicacion {
 
     @Override
     public void onOpen(WebSocket webSocketClient, ClientHandshake handshake) {
-        observers.add(webSocketClient);
+        salaChat.add(webSocketClient);
         System.out.println(webSocketClient.getRemoteSocketAddress() + " connected");
     }
 
     @Override
     public void onClose(WebSocket webSocketClient, int code, String reason, boolean remote) {
-        observers.remove(webSocketClient);
-        System.out.println(webSocketClient + " has left the room!");
+        salaChat.remove(webSocketClient);
+        System.out.println(webSocketClient.getRemoteSocketAddress() + " disconnected");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ChatServer extends WebSocketServer implements ICanalComunicacion {
 
     @Override
     public void sendAll(WebSocket sender, String message) {
-        for (WebSocket observer : observers) {
+        for (WebSocket observer : salaChat) {
             if (observer != sender) {
                 observer.send(message);
             }
